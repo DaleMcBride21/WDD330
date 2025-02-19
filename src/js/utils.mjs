@@ -60,18 +60,17 @@ export async function renderWithTemplate(
   }
 }
 
-export function loadTemplate(path) { 
-  return async function() {
-    const response = await fetch(path);
-    if (response.ok) {
-      const html = await response.text();
+function loadTemplate(path) {
+  return async function () {
+    const res = await fetch(path);
+    if (res.ok) {
+      const html = await res.text();
       return html;
     }
-  }
+  };
 }
 
-export function loadHeaderFooter() {
-  console.log("loading header and footer");
+export async function loadHeaderFooter() {
   const headerTemplateFn = loadTemplate("/partials/header.html");
   const footerTemplateFn = loadTemplate("/partials/footer.html");
   const headerEl = document.querySelector("#main-header");
