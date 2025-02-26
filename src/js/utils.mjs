@@ -7,7 +7,12 @@ export function qs(selector, parent = document) {
 
 // retrieve data from localstorage
 export function getLocalStorage(key) {
-  return JSON.parse(localStorage.getItem(key));
+  const item = localStorage.getItem(key);
+  if (item) {
+    return JSON.parse(item);
+  } else {
+    return null; // Or return an empty array [], depending on your use case
+  }
 }
 // save data to local storage
 export function setLocalStorage(key, data) {
@@ -38,6 +43,11 @@ export function renderListWithTemplate(
   if (clear) {
     parentElement.innerHTML = "";
   }
+
+  // console.log("List:", list); 
+  // console.log("Is Array:", Array.isArray(list)); 
+  // console.log("Type of List:", typeof list); 
+
   const htmlString = list.map(templateFn);
   parentElement.insertAdjacentHTML(position, htmlString.join(""));
 }
@@ -61,6 +71,7 @@ export async function renderWithTemplate(
 }
 
 function loadTemplate(path) {
+  // wait what?  we are returning a new function? this is called currying and can be very helpful.
   return async function () {
     const res = await fetch(path);
     if (res.ok) {
@@ -71,10 +82,54 @@ function loadTemplate(path) {
 }
 
 export async function loadHeaderFooter() {
+  // header template will still be a function! But one where we have pre-supplied the argument.
+  // headerTemplate and footerTemplate will be almost identical, but they will remember the path we passed in when we created them
+  // why is it important that they stay functions?  The renderWithTemplate function is expecting a template function...if we sent it a string it would break, if we changed it to expect a string then it would become less flexible.
   const headerTemplateFn = loadTemplate("/partials/header.html");
   const footerTemplateFn = loadTemplate("/partials/footer.html");
   const headerEl = document.querySelector("#main-header");
   const footerEl = document.querySelector("#main-footer");
   renderWithTemplate(headerTemplateFn, headerEl);
   renderWithTemplate(footerTemplateFn, footerEl);
+  console.log("Header and Footer Loaded");
+}
+
+
+export function cartSuperScript() {
+  try {
+    let cartItems = getLocalStorage("so-cart");
+
+    if (cartItems) {
+      cartItems = JSON.parse(cartItems);
+      const cartCount = cartItems.length;
+      console.log("Cart Count:", cartCount);
+
+      const cartIcon = document.getElementById("cart-icon");
+
+      if (cartIcon) {
+        //check if a superscript already exists, if so, update it.
+        let cartCountEl = document.getElementById("cart-count-superscript");
+        if(cartCountEl){
+            cartCountEl.innerText = cartCount;
+        } else {
+            cartCountEl = document.createElement("sup");
+            cartCountEl.id = "cart-count-superscript";
+            cartCountEl.innerText = cartCount;
+            cartIcon.appendChild(cartCountEl);
+        }
+
+      } else {
+        console.error("Cart icon element not found.");
+      }
+    } else {
+      console.log("Cart is empty.");
+      //you may want to remove the superscript if the cart is empty.
+      const cartCountEl = document.getElementById("cart-count-superscript");
+      if(cartCountEl){
+          cartCountEl.remove();
+      }
+    }
+  } catch (error) {
+    console.error("Error updating cart superscript:", error);
+  }
 }
