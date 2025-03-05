@@ -48,6 +48,7 @@ header {
 }
 
 
+
 .logo {
   line-height: 60px;
   width: 245px;
@@ -78,7 +79,7 @@ header {
   font-size: var(--small-font);
   width: 110px;
   height: 80px;
-
+  
   flex-direction: column;
   align-items: flex-end;
   box-shadow: 1px 1px 4px var(--light-grey);
@@ -94,6 +95,7 @@ header {
 .logo--square > div {
   margin-top: -1.7em;
 }
+
 /* utility classes */
 .highlight {
   color: var(--tertiary-color);
@@ -117,6 +119,26 @@ button {
 }
 /* End utility classes */
 
+/* alert styles */
+.alert {
+  padding: 0.5em;
+  background-color: var(--primary-color);
+  color: black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert span {
+  margin-left: 10px;
+  font-size: 30px;
+}
+
+.alert span:hover {
+  cursor: pointer;
+}
+
+
 /* Cart icon styles */
 .cart {
   padding-top: 1em;
@@ -131,6 +153,21 @@ button {
   fill: gray;
 }
 
+.superScript {
+  z-index: 50;
+  position: absolute;
+  border-radius: 50%; /* Make it a circle */
+  top: 5px;
+  right: -3px;
+  border: 2px solid red; /* Add a border */
+  width: 20px; /* Set a width and height */
+  height: 20px;
+  display: flex; /*Use flex box to center the number*/
+  justify-content: center;
+  align-items: center;
+  font-size: 12px; /* Adjust font size if needed */
+  background-color: white; /* add a background color if needed */
+}
 /* End cart icon styles */
 
 /* product grid styles */
@@ -235,6 +272,11 @@ button {
   font-size: 1em;
 }
 
+/* checkout hide button */
+.hide {
+  display: none;
+}
+
 /* Styles for product lists */
 .product-card {
   flex: 1 1 45%;
@@ -310,6 +352,18 @@ button {
   grid-column: 4;
   font-size: 45px;
   cursor: pointer;
+}
+
+/* newletter secion */
+.newsletter {
+  text-align: center;
+  padding: 1em;
+}
+
+.newsletter input {
+  width: 25%;
+  font-size: 1.2em;
+  margin-bottom: 15px;
 }
 
 @media screen and (min-width: 500px) {

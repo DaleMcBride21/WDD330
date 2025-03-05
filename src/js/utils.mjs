@@ -94,42 +94,26 @@ export async function loadHeaderFooter() {
   console.log("Header and Footer Loaded");
 }
 
-
-export function cartSuperScript() {
-  try {
-    let cartItems = getLocalStorage("so-cart");
-
-    if (cartItems) {
-      cartItems = JSON.parse(cartItems);
-      const cartCount = cartItems.length;
-      console.log("Cart Count:", cartCount);
-
-      const cartIcon = document.getElementById("cart-icon");
-
-      if (cartIcon) {
-        //check if a superscript already exists, if so, update it.
-        let cartCountEl = document.getElementById("cart-count-superscript");
-        if(cartCountEl){
-            cartCountEl.innerText = cartCount;
-        } else {
-            cartCountEl = document.createElement("sup");
-            cartCountEl.id = "cart-count-superscript";
-            cartCountEl.innerText = cartCount;
-            cartIcon.appendChild(cartCountEl);
-        }
-
-      } else {
-        console.error("Cart icon element not found.");
+export function alertMessage(message, scroll = true) {
+  // create element to hold our alert
+  const alert = document.createElement('div');
+  // add a class to style the alert
+  alert.classList.add('alert');
+  // set the contents. You should have a message and an X or something the user can click on to remove
+  alert.innerHTML = `<h3>${message}</h3><span>X</span>`;
+  // add a listener to the alert to see if they clicked on the X
+  // if they did then remove the child
+  alert.addEventListener('click', function(e) {
+      if(e.target.tagName == "SPAN") { // how can we tell if they clicked on our X or on something else?  hint: check out e.target.tagName or e.target.innerText
+        main.removeChild(this);
       }
-    } else {
-      console.log("Cart is empty.");
-      //you may want to remove the superscript if the cart is empty.
-      const cartCountEl = document.getElementById("cart-count-superscript");
-      if(cartCountEl){
-          cartCountEl.remove();
-      }
-    }
-  } catch (error) {
-    console.error("Error updating cart superscript:", error);
-  }
+  })
+  // add the alert to the top of main
+  const main = document.querySelector('main');
+  main.prepend(alert);
+  // make sure they see the alert by scrolling to the top of the window
+  //we may not always want to do this...so default to scroll=true, but allow it to be passed in and overridden.
+  if(scroll)
+    window.scrollTo(0,0);
+
 }
