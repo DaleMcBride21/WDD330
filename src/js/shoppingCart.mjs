@@ -16,8 +16,10 @@ function displayCartTotal(total) {
     // show our checkout button and total if there are items in the cart.
     document.querySelector(".list-footer").classList.remove("hide");
     document.querySelector(".list-total").innerText += ` $${total}`;
+    console.log("shown");
   } else {
     document.querySelector(".list-footer").classList.add("hide");
+    console.log("hidden");
   }
 }
 

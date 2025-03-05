@@ -36,7 +36,7 @@ const checkoutProcess = {
   init: function (key, outputSelector) {
     this.key = key;
     this.outputSelector = outputSelector;
-    this.list = getLocalStorage(key);
+    this.list = JSON.parse(getLocalStorage(key));
     this.calculateItemSummary();
   },
   calculateItemSummary: function () {
@@ -47,6 +47,7 @@ const checkoutProcess = {
       this.outputSelector + " #num-items"
     );
     itemNumElement.innerText = this.list.length;
+    console.log(typeof this.list);
     // calculate the total of all the items in the cart
     const amounts = this.list.map((item) => item.FinalPrice);
     this.itemTotal = amounts.reduce((sum, item) => sum + item);

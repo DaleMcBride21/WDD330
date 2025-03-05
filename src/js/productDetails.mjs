@@ -1,16 +1,34 @@
 import { findProductById } from "./externalServices.mjs";
-import { setLocalStorage, getLocalStorage } from "./utils.mjs";
+import { setLocalStorage, getLocalStorage, alertMessage } from "./utils.mjs";
 
 let product = {};
 
-export default async function productDetails(productId) {
+export function wiggleCartIcon() {
+  const cartIcon = document.getElementById("cart-icon");
+
+  cartIcon.classList.add("wiggle");
+            console.log("wiggle");
+            setTimeout(() => {
+                cartIcon.classList.remove("wiggle");
+            }, 500);   
+          }
+
+export async function productDetails(productId) {
   // get the details for the current product. findProductById will return a promise! use await or .then() to process it
   product = await findProductById(productId);
-  // once we have the product details we can render out the HTML
-  renderProductDetails();
-  // once the HTML is rendered we can add a listener to Add to Cart button
-  document.getElementById("addToCart").addEventListener("click", addToCart);
+
+  if (product === undefined) {
+    document.querySelector(".product-detail").innerHTML = "<h2>Product Not Found</h2>";
+    document.getElementById("addToCart").style.display = "none";
+  } else {
+    // once we have the product details we can render out the HTML
+    renderProductDetails();
+    // once the HTML is rendered we can add a listener to Add to Cart button
+    document.getElementById("addToCart").addEventListener("click", addToCart);
+  }
 }
+
+
 
 function addToCart() {
   let cartContents = getLocalStorage("so-cart");
@@ -31,9 +49,16 @@ function addToCart() {
   }
 
   // Then add the current product to the list
-  cartContents.push(product);
-  console.log(cartContents);
-
+  if (cartContents.some((item) => item.Id === product.Id)) {
+    console.log("Product is already in the cart.");
+    alertMessage(`${product.NameWithoutBrand} is already in your cart!`);
+  } else {
+    wiggleCartIcon();
+    cartContents.push(product);
+    alertMessage(`${product.NameWithoutBrand} added to cart!`);
+    console.log(cartContents);
+  }
+  
   // Stringify the array before storing it.
   setLocalStorage("so-cart", JSON.stringify(cartContents));
 }
@@ -71,6 +96,20 @@ export function removeFromCart() {
   });
 }
 
+export function cartSuperScript() {
+  let cartItems = getLocalStorage("so-cart");
+
+  if (cartItems) {
+    cartItems = JSON.parse(cartItems);
+    const cartCount = cartItems.length;
+    console.log("Cart Count:", cartCount);
+
+    const cartIcon = document.querySelector(".cart");
+    cartIcon.insertAdjacentHTML("beforeend", `<sup class="superScript">${cartCount}</sup>`);
+
+  }  
+}
+
 
 function renderProductDetails() {
   document.querySelector("#productName").innerText = product.Brand.Name;
@@ -85,3 +124,4 @@ function renderProductDetails() {
     product.DescriptionHtmlSimple;
   document.querySelector("#addToCart").dataset.id = product.Id;
 }
+

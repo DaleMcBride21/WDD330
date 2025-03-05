@@ -1,0 +1,10 @@
+[{"message": "Alert 1",
+    "background": "darkblue",
+    "color": "white"},
+    {"message": "Alert 2",
+    "background": "black",
+    "color": "white"},
+    {"message": "Alert 3",
+    "background": "red",
+    "color": "white"}
+]
