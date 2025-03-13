@@ -13,6 +13,20 @@
     <main class="divider">
       <section class="products">
         <h2>Top Products: <span class="title"></span></h2>
+        <div class="filters">
+          <div>
+            <label for="brandName">Brand</label>
+            <select id="brandName" name="brandName">
+              <option value="">--Choose a name--</option>
+              
+            </select>
+          </div>
+          <div>
+            <label for="pricePoint">Price</label>
+            <input type="number" id="pricePoint" name="pricePoint" step="50">
+          </div>
+        </div>
+        <button id="searchPriceOrName">Search</button>
         <ul class="product-list"></ul>
       </section>
     </main>

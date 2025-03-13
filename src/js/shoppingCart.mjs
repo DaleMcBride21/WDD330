@@ -38,7 +38,7 @@ function cartItemTemplate(item) {
   <p class="cart-card__quantity">qty: 1</p>
   <span data-id="${item.Id}" class="cart-card__remove">&times;</span>
   <p class="cart-card__price">$${item.FinalPrice}</p>
-
+  <p class="product-indicators" id="productIndicator">${item.IsClearance ? '50% OFF' : ''}</p>
 </li>`;
 
   return newItem;

@@ -20,6 +20,7 @@ document.forms["checkout"].addEventListener("submit", (e) => {
   checkoutProcess.checkout(e.target);
   console.log("test");
   window.location.href = "success.html";
+  localStorage.setItem("previousOrder", JSON.stringify(checkoutProcess.list));
   localStorage.removeItem("so-cart");
 });
 

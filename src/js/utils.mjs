@@ -117,3 +117,8 @@ export function alertMessage(message, scroll = true) {
     window.scrollTo(0,0);
 
 }
+
+export function removeAllAlerts() {
+  const alerts = document.querySelectorAll(".alert");
+  alerts.forEach((alert) => document.querySelector("main").removeChild(alert));
+}
