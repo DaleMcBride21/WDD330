@@ -11,16 +11,21 @@ export function wiggleCartIcon() {
             console.log("wiggle");
             setTimeout(() => {
                 cartIcon.classList.remove("wiggle");
-            }, 500);   
+            }, 500);
           }
 
 export async function productDetails(productId) {
   // get the details for the current product. findProductById will return a promise! use await or .then() to process it
   product = await findProductById(productId);
+  console.log(product);
   // add the FinalPrice to the product object
   product.FinalPrice = clearanceSale(product);
   // once we have the product details we can render out the HTML
   renderProductDetails();
+
+  // add the event listener to the color swatch
+  changeColor();
+  updateProductColor();
   // once the HTML is rendered we can add a listener to Add to Cart button
   document.getElementById("addToCart").addEventListener("click", addToCart);
 }
@@ -29,36 +34,49 @@ export async function productDetails(productId) {
 
 function addToCart() {
   let cartContents = getLocalStorage("so-cart");
-  
-  // Check if there was anything there and parse it.
+
   if (cartContents) {
     try {
       cartContents = JSON.parse(cartContents);
       if (!Array.isArray(cartContents)) {
-        cartContents = []; //if the parsed value is not an array, initialize to an empty array.
+        cartContents = []; 
       }
     } catch (error) {
       console.error("Error parsing cart contents:", error);
-      cartContents = []; // If parsing fails, reset to an empty array.
+      cartContents = []; 
     }
   } else {
     cartContents = [];
   }
 
-  // Then add the current product to the list
-  if (cartContents.some((item) => item.Id === product.Id)) {
-    console.log("Product is already in the cart.");
-    alertMessage(`${product.NameWithoutBrand} is already in your cart!`);
+  // Ensure that a color was selected
+  if (!product.SelectedColor) {
+    alertMessage("Please select a color before adding to cart.");
+    return;
+  }
+
+  // Add the selected color to the product object
+  const productWithColor = {
+    ...product, 
+    SelectedColor: product.SelectedColor,
+    SelectedColorImage: product.SelectedColorImage
+  };
+
+  // Check if product with same ID and color already exists
+  if (cartContents.some((item) => item.Id === product.Id && item.SelectedColor === productWithColor.SelectedColor)) {
+    console.log("Product with this color is already in the cart.");
+    alertMessage(`${product.NameWithoutBrand} (${productWithColor.SelectedColor}) is already in your cart!`);
   } else {
     wiggleCartIcon();
-    cartContents.push(product);
-    alertMessage(`${product.NameWithoutBrand} added to cart!`);
+    cartContents.push(productWithColor);
+    alertMessage(`${product.NameWithoutBrand} (${productWithColor.SelectedColor}) added to cart!`);
     console.log(cartContents);
   }
-  
-  // Stringify the array before storing it.
+
   setLocalStorage("so-cart", JSON.stringify(cartContents));
 }
+
+
 
 export function removeFromCart() {
   const removeButtons = document.querySelectorAll(".cart-card__remove");
@@ -107,6 +125,55 @@ export function cartSuperScript() {
   }  
 }
 
+function changeColor() {
+  const colors = product.Colors;
+  console.log(colors);
+  const colorSelector = document.querySelector(".color__selector");
+  colorSelector.innerHTML = ""; // Clear existing options before adding new ones
+
+  colors.forEach((color) => {
+    const colorOption = document.createElement("li");
+    colorOption.classList.add("color__option");
+    colorOption.setAttribute("data-color", color.ColorName); // Store color name
+    colorOption.innerHTML = `
+      <img src="${color.ColorChipImageSrc}" alt="${color.ColorName}" />
+      <p>${color.ColorName}</p>
+    `;
+    colorSelector.appendChild(colorOption);
+  });
+}
+
+function updateProductColor() {
+  const colorSelector = document.querySelector(".color__selector");
+
+  colorSelector.addEventListener("click", (event) => {
+    const clickedElement = event.target.closest(".color__option"); // Get the clicked color option
+    if (!clickedElement) return; // Ignore clicks outside of options
+
+    const selectedColor = clickedElement.getAttribute("data-color"); // Get the selected color
+
+    const selectedColorObj = product.Colors.find(
+      (color) => color.ColorName === selectedColor
+    );
+
+    console.log(selectedColorObj);
+    if (selectedColorObj) {
+      document.querySelector("#productImage").src =
+        selectedColorObj.ColorPreviewImageSrc;
+      document.querySelector("#productImage").alt =
+        `${product.Name} - ${selectedColor}`;
+      document.querySelector("#productColorName").innerText =
+        selectedColorObj.ColorName;
+
+      // Store selected color for adding to cart
+      product.SelectedColor = selectedColorObj.ColorName;
+      product.SelectedColorImage = selectedColorObj.ColorPreviewImageSrc;
+    }
+  });
+}
+
+
+
 
 function renderProductDetails() {
   document.querySelector("#productName").innerText = product.Brand.Name;
@@ -116,8 +183,7 @@ function renderProductDetails() {
   document.querySelector("#productImage").alt = product.Name;
   document.querySelector("#productFinalPrice").innerText = product.FinalPrice;
   document.querySelector("#productIndicator").innerText = product.IsClearance ? '50% OFF' : '';
-  document.querySelector("#productColorName").innerText =
-    product.Colors[0].ColorName;
+  
   document.querySelector("#productDescriptionHtmlSimple").innerHTML =
     product.DescriptionHtmlSimple;
   document.querySelector("#addToCart").dataset.id = product.Id;
