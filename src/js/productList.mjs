@@ -134,7 +134,8 @@ export function quickViewProduct(category) {
         console.log(productInfo); // Now productInfo contains the resolved product data
 
         productModalBackground.style.display = 'block';
-        productModal.style.height = "600px";
+        productModal.style.display = 'block';
+        
 
         previewImage.src = productInfo.Images.PrimaryMedium; 
         previewBrand.textContent = productInfo.Brand.Name;
@@ -154,7 +155,7 @@ export function closeQuickView() {
   const productModal = document.getElementById('productModal');
   productModalBackground.addEventListener("click", () => {
     productModalBackground.style.display = "none";
-    productModal.style.height = 0;
+    productModal.style.display = "none";
     
     console.log("Closed Preview")
   });
